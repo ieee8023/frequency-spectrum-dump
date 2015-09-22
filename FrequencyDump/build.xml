@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Frequency Drump" default="buildJar" basedir=".">
+
+	<property name="lib" value="lib/"/>
+	<property name="src" value="src/"/>
+	<property name="bin" value="bin_ant/"/>
+	<property name="db" value="db"/>
+			
+	<path id="classpath">
+	  	<fileset dir="${lib}">
+			<include name="*.jar"/>
+	  	</fileset>
+	  	<pathelement location="${bin}"/>
+	</path>
+	
+	<pathconvert property="libs.project" pathsep=" ">
+	    <mapper>
+	      <chainedmapper>
+	 
+	        <!-- remove absolute path -->
+	        <flattenmapper />
+	 
+	        <!-- add lib/ prefix -->
+	        <globmapper from="*" to="lib/*" />
+	      </chainedmapper>
+	    </mapper>
+	 
+	    <path>
+	 
+	      <!-- lib.home contains all jar files, in several subdirectories -->
+	      <fileset dir="${lib}">
+	        <include name="**/*.jar" />
+	      </fileset>
+	    </path>
+	  </pathconvert>
+	
+	<target name="clean">
+		<delete dir="${bin}"/>
+		<delete dir="${db}"/>
+	</target>
+	
+	<target name="build">
+	 	<mkdir dir="${bin}"/>
+		<javac srcdir="${src}" destdir="${bin}" source="1.5" fork="true" optimize="true" target="1.5" includeantruntime="false">
+			<classpath refid="classpath" />
+		</javac>
+	 	<copy todir="${bin}">
+	     	<fileset dir="${src}" casesensitive="yes">
+	     	  <include name="**/**.properties"/>
+	     	  <include name="**/**.xml"/>
+	     	</fileset>
+	 	</copy>
+	 	
+	</target>
+	
+	<target name="buildJar" depends="build">
+		<jar destfile="FrequencyDump.jar" baseDir="${bin}">
+            <manifest>
+                <attribute name="Main-Class" value="joecohen.FrequencyDump"/>
+            	<attribute name="Class-Path" value="${libs.project}" />
+            </manifest>
+		</jar>
+	</target>
+	
+</project>
